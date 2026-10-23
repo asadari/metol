@@ -1,10 +1,10 @@
-button|延时摄影|@/opt/usr/nx-ks/gui_tl.NX500
-button|实用功能|@/opt/usr/nx-ks/gui_func.NX500
+button|타임랩스|@/opt/usr/nx-ks/gui_tl.NX500
+button|유틸리티|@/opt/usr/nx-ks/gui_func.NX500
 
-button|对焦 & 配置文件|@/opt/usr/nx-ks/gui_focus.NX500
-button|系统设置|@/opt/usr/nx-ks/gui_settings.NX500
+button|초점 / 프로필|@/opt/usr/nx-ks/gui_focus.NX500
+button|시스템 설정|@/opt/usr/nx-ks/gui_settings.NX500
 
-button|休眠|hibernate.sh
-checkbox|远程控制|nx-rc.sh
+button|절전|hibernate.sh
+checkbox|원격 제어|nx-rc.sh
 
 button|IP: %%IP%% [%%TN%%]|telnet_toggle.sh

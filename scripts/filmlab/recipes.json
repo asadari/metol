@@ -91,7 +91,7 @@
         "CONTRAST": 11
     },
     "ektachrome_cyan": {
-        "label": "EK Cyan 冷调",
+        "label": "EK Cyan 쿨톤",
         "R_COLOR": 88,
         "G_COLOR": 112,
         "B_COLOR": 125,
@@ -111,7 +111,7 @@
         "CONTRAST": 13
     },
     "trix400": {
-        "label": "TriX 400 暖调",
+        "label": "TriX 400 웜톤",
         "R_COLOR": 107,
         "G_COLOR": 100,
         "B_COLOR": 95,
@@ -121,7 +121,7 @@
         "CONTRAST": 12
     },
     "hp5": {
-        "label": "HP5 粗颗粒",
+        "label": "HP5 거친 입자",
         "R_COLOR": 101,
         "G_COLOR": 100,
         "B_COLOR": 99,
@@ -131,7 +131,7 @@
         "CONTRAST": 13
     },
     "delta3200": {
-        "label": "Delta 3200 粗犷",
+        "label": "Delta 3200 거친 질감",
         "R_COLOR": 100,
         "G_COLOR": 100,
         "B_COLOR": 100,
@@ -141,7 +141,7 @@
         "CONTRAST": 17
     },
     "monowarm": {
-        "label": "暖调 棕褐",
+        "label": "웜톤 세피아",
         "R_COLOR": 112,
         "G_COLOR": 100,
         "B_COLOR": 88,
@@ -151,7 +151,7 @@
         "CONTRAST": 11
     },
     "monocool": {
-        "label": "冷调 青蓝",
+        "label": "쿨톤 청색",
         "R_COLOR": 88,
         "G_COLOR": 100,
         "B_COLOR": 114,
@@ -171,7 +171,7 @@
         "CONTRAST": 12
     },
     "xpro": {
-        "label": "X-Pro 交叉",
+        "label": "X-Pro 크로스",
         "R_COLOR": 110,
         "G_COLOR": 103,
         "B_COLOR": 88,
@@ -291,7 +291,7 @@
         "CONTRAST": 9
     },
     "acros100": {
-        "label": "Acros 冷调",
+        "label": "Acros 쿨톤",
         "R_COLOR": 95,
         "G_COLOR": 100,
         "B_COLOR": 106,
@@ -341,7 +341,7 @@
         "CONTRAST": 9
     },
     "velvia50_land": {
-        "label": "Velvia 50 风光",
+        "label": "Velvia 50 풍경",
         "R_COLOR": 91,
         "G_COLOR": 112,
         "B_COLOR": 109,
@@ -381,7 +381,7 @@
         "CONTRAST": 13
     },
     "tmax100": {
-        "label": "T-MAX 100 锐利",
+        "label": "T-MAX 100 선명",
         "R_COLOR": 100,
         "G_COLOR": 100,
         "B_COLOR": 100,
@@ -391,7 +391,7 @@
         "CONTRAST": 11
     },
     "panf50": {
-        "label": "Pan F 极细",
+        "label": "Pan F 미세 입자",
         "R_COLOR": 99,
         "G_COLOR": 100,
         "B_COLOR": 102,
@@ -421,7 +421,7 @@
         "CONTRAST": 10
     },
     "teal_orange": {
-        "label": "青橙",
+        "label": "틸 오렌지",
         "R_COLOR": 106,
         "G_COLOR": 97,
         "B_COLOR": 107,
@@ -431,7 +431,7 @@
         "CONTRAST": 12
     },
     "warm_vintage": {
-        "label": "暖旧",
+        "label": "따뜻한 빈티지",
         "R_COLOR": 110,
         "G_COLOR": 100,
         "B_COLOR": 88,
@@ -441,7 +441,7 @@
         "CONTRAST": 9
     },
     "cold_steel": {
-        "label": "冷峻",
+        "label": "차가운 톤",
         "R_COLOR": 92,
         "G_COLOR": 100,
         "B_COLOR": 110,
@@ -451,7 +451,7 @@
         "CONTRAST": 12
     },
     "faded_film": {
-        "label": "褪色",
+        "label": "페이드",
         "R_COLOR": 102,
         "G_COLOR": 100,
         "B_COLOR": 102,
@@ -461,7 +461,7 @@
         "CONTRAST": 5
     },
     "highkey": {
-        "label": "高调",
+        "label": "하이키",
         "R_COLOR": 101,
         "G_COLOR": 101,
         "B_COLOR": 101,
@@ -471,7 +471,7 @@
         "CONTRAST": 3
     },
     "lowkey": {
-        "label": "低调",
+        "label": "로우키",
         "R_COLOR": 99,
         "G_COLOR": 99,
         "B_COLOR": 99,
@@ -481,7 +481,7 @@
         "CONTRAST": 16
     },
     "sepia_vintage": {
-        "label": "棕褐",
+        "label": "세피아",
         "R_COLOR": 114,
         "G_COLOR": 102,
         "B_COLOR": 80,
@@ -491,7 +491,7 @@
         "CONTRAST": 11
     },
     "bleach_bypass": {
-        "label": "漂白",
+        "label": "블리치",
         "R_COLOR": 102,
         "G_COLOR": 101,
         "B_COLOR": 103,
@@ -501,7 +501,7 @@
         "CONTRAST": 16
     },
     "blue_hour": {
-        "label": "蓝调时刻",
+        "label": "블루아워",
         "R_COLOR": 90,
         "G_COLOR": 100,
         "B_COLOR": 112,
@@ -521,7 +521,7 @@
         "CONTRAST": 9
     },
     "portra800_push": {
-        "label": "Portra 800 推1600",
+        "label": "Portra 800 1600 증감",
         "R_COLOR": 110,
         "G_COLOR": 102,
         "B_COLOR": 91,

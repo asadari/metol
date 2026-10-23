@@ -4,12 +4,12 @@
 # 全部为只读操作，安全
 #=====================================================================
 
-button|配方列表|/opt/usr/nx-ks/filmlab.sh list
-button|当前槽位状态|/opt/usr/nx-ks/filmlab.sh dump
-button|槽位映射说明|/opt/usr/nx-ks/filmlab.sh slots
-button|白平衡状态(只读)|/opt/usr/nx-ks/filmlab.sh wbdump
+button|레시피 목록|/opt/usr/nx-ks/filmlab.sh list
+button|슬롯 상태|/opt/usr/nx-ks/filmlab.sh dump
+button|슬롯 매핑 안내|/opt/usr/nx-ks/filmlab.sh slots
+button|WB 상태 조회|/opt/usr/nx-ks/filmlab.sh wbdump
 
-button|——— 白平衡实验 ———|@/opt/usr/nx-ks/gui_filmlab4.NX500
+button|WB 실험|@/opt/usr/nx-ks/gui_filmlab4.NX500
 
-button|返回|@/opt/usr/nx-ks/gui_filmlab2.NX500
-button|取消|/opt/usr/nx-ks/gui_exit.sh
+button|뒤로|@/opt/usr/nx-ks/gui_filmlab2.NX500
+button|취소|/opt/usr/nx-ks/gui_exit.sh

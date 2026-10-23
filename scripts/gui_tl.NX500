@@ -1,8 +1,8 @@
-button|唤醒延时|wakelapse.sh
-button|渐变曝光|@/tmp/gui_ramp.NX500
+button|절전 타임랩스|wakelapse.sh
+button|노출 램핑|@/tmp/gui_ramp.NX500
 
-button|模块延时|mod_lapse
-button|即将推出|
+button|모드 타임랩스|mod_lapse
+button|준비 중|
 
-button|返回|@/opt/usr/nx-ks/gui_ini.NX500
-button|取消|/opt/usr/nx-ks/gui_exit.sh
+button|뒤로|@/opt/usr/nx-ks/gui_ini.NX500
+button|취소|/opt/usr/nx-ks/gui_exit.sh

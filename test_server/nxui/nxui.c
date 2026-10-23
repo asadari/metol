@@ -70,7 +70,7 @@ static long long service_due;
 static struct nx_services services;
 static const char *net_dir = "/proc/net";
 static int backend_phase, busy_recipe = -1, pipe_eof;
-static char output[4096], status[384] = "选择配方以预览 · 保存后保留设置";
+static char output[4096], status[384] = "레시피 선택으로 미리보기 · 저장하면 설정 유지";
 static char menu_path[NXUI_PATH];
 static char pending_menu[NXUI_PATH];
 static volatile sig_atomic_t interrupted;
@@ -145,10 +145,10 @@ static void refresh_services(int force) {
 }
 static void preview_status(void) {
     if (child && busy_kind == 1 && queue.desired >= 0 && queue.desired != queue.running)
-        snprintf(status, sizeof status, "已选择 %s · 等待当前预览完成", recipes[queue.desired].label);
+        snprintf(status, sizeof status, "%s 선택 · 미리보기 완료 대기", recipes[queue.desired].label);
     else if (child && busy_kind == 1 && busy_recipe >= 0)
-        snprintf(status, sizeof status, "%s：%s", backend_phase == 2 ? "正在确认" : (queue.committing ? "正在保存" : "正在发送"), recipes[busy_recipe].label);
-    else snprintf(status, sizeof status, "%s：%s", live ? "准备预览" : "演示选择", recipes[selected].label);
+        snprintf(status, sizeof status, "%s：%s", backend_phase == 2 ? "확인 중" : (queue.committing ? "저장 중" : "전송 중"), recipes[busy_recipe].label);
+    else snprintf(status, sizeof status, "%s：%s", live ? "미리보기 준비" : "데모 선택", recipes[selected].label);
     dirty = 1;
 }
 static int checked(const char *name) {
@@ -172,7 +172,7 @@ static int load_menu(const char *source) {
     char next[NXUI_PATH]; int n;
     if (!nx_menu_path(root, source, next, sizeof next) ||
         (n = nx_load_menu(next, pending, NXUI_MAX_ITEMS)) <= 0) {
-        message("菜单读取失败 · 详情见日志"); return 0;
+        message("메뉴 읽기 실패 · 로그 확인"); return 0;
     }
     memcpy(items, pending, (size_t)n * sizeof *items);
     snprintf(menu_path, sizeof menu_path, "%s", next);
@@ -210,9 +210,9 @@ static int start_child(int kind, int index, const char *command) {
     if (!live) {
         if (kind == 1) {
             nx_queue_done(&queue, 1);
-            message("演示模式 · 已选择，未写入相机");
+            message("데모 · 선택됨, 카메라에 적용 안 함");
             if (queue.committing) quit = 1;
-        } else message("演示模式 · 未执行菜单命令");
+        } else message("데모 · 메뉴 명령 실행 안 함");
         return 1;
     }
     if (pipe(pipefd) < 0) return 0;
@@ -248,7 +248,7 @@ static int start_child(int kind, int index, const char *command) {
     busy_recipe = index; backend_phase = 0; pipe_eof = 0;
     child_started = now_ms(); child_timed_out = 0; output_len = 0;
     output[0] = 0;
-    if (kind == 1) preview_status(); else message("正在执行…");
+    if (kind == 1) preview_status(); else message("실행 중…");
     return 1;
 }
 static void poll_child(void) {
@@ -263,7 +263,7 @@ static void poll_child(void) {
         long long grace = lut_mode && (busy_kind == 1 || busy_kind == 8) ? 5000 : 1000;
         if (age > limit && !child_timed_out) {
             child_timed_out = 1; kill(-child, SIGTERM);
-            message("后端超时 · 正在停止，请检查相机状态");
+            message("응답 시간 초과 · 중지 중, 카메라 확인");
         }
         if (age > limit + grace) kill(-child, SIGKILL);
         return;
@@ -278,8 +278,8 @@ static void poll_child(void) {
         nx_queue_done(&queue, success);
         if (queue.desired >= 0 && queue.desired != busy_recipe) preview_status();
         else if (success) {
-            snprintf(status, sizeof status, "已发送：%s", recipes[busy_recipe].label); dirty = 1;
-        } else message("应用失败 · 可重新选择以重试");
+            snprintf(status, sizeof status, "전송 완료: %s", recipes[busy_recipe].label); dirty = 1;
+        } else message("적용 실패 · 다시 선택하여 재시도");
         if (was_commit && success) quit = 1;
         /* A drained-on-close run has no panel left to report to: exit either
          * way. The slot write itself is verified inside lut.sh, and a failed
@@ -289,15 +289,15 @@ static void poll_child(void) {
         else if (!success) { queue.close_requested = 0; queue.commit_requested = 0; }
         drain_on_close = 0;
     } else if (busy_kind == 3) {
-        if (success && load_menu(pending_menu)) message("请选择菜单项");
-        else message("子菜单生成失败 · 可重新进入");
+        if (success && load_menu(pending_menu)) message("메뉴를 선택하세요");
+        else message("하위 메뉴 생성 실패 · 다시 열어주세요");
         pending_menu[0] = 0;
     } else if (busy_kind == 4) {
         refresh_services(1);
-        if (!services.known) message("服务状态读取失败 · 请重试");
+        if (!services.known) message("서비스 상태 읽기 실패 · 재시도하세요");
         else {
-            snprintf(status, sizeof status, "%sTelnet 已%s · FTP 已%s", success ? "" : "未完全成功 · ",
-                services.telnet ? "开启" : "关闭", services.ftp ? "开启" : "关闭");
+            snprintf(status, sizeof status, "%sTelnet %s · FTP %s", success ? "" : "일부 실패 · ",
+                services.telnet ? "켜짐" : "꺼짐", services.ftp ? "켜짐" : "꺼짐");
             dirty = 1;
         }
     } else if (busy_kind == 6) {
@@ -313,15 +313,15 @@ static void poll_child(void) {
             }
         }
     } else if (busy_kind == 7) {
-        message(success ? "已还原中性 · 切档或重启回原厂" : "还原失败 · 详情见日志");
+        message(success ? "중립값 복원 · 모드 변경/재시작 시 기본값" : "복원 실패 · 로그 확인");
     } else if (busy_kind == 8) {
-        message(success ? "已还原原厂表" : "还原失败 · 详情见日志");
+        message(success ? "기본 LUT 복원 완료" : "복원 실패 · 로그 확인");
     } else {
         if (close_after_child) {
             close_after_child = 0;
             if (success) { quit = 1; queue.close_requested = 1; }
         }
-        message(success ? "命令已完成" : "命令失败 · 详情见日志");
+        message(success ? "명령 완료" : "명령 실패 · 로그 확인");
     }
     dirty = 1;
 }
@@ -343,7 +343,7 @@ static void activate_item(int index) {
     char source[NXUI_PATH], target[NXUI_PATH], command[1024];
     const char *name = base_name(it->command); size_t i;
     fprintf(stderr, "ACTION item=%d checkbox=%d\n", index, it->checkbox);
-    if (child) { message("请等待当前操作完成"); return; }
+    if (child) { message("작업이 끝날 때까지 기다려주세요"); return; }
     if (strstr(it->command, "gui_exit.sh")) { queue.close_requested = 1; return; }
     if (it->command[0] == '@') {
         if (strstr(it->command, "gui_filmlab1b")) { menu = 0; resize_panel(); return; }
@@ -353,7 +353,7 @@ static void activate_item(int index) {
              * files need no disk flush, and need not delay every UI opening. */
             snprintf(pending_menu, sizeof pending_menu, "%s", it->command);
             if (!start_child(3, -1, "sed '/^sync;/d' ./br_menu.sh | /bin/bash"))
-                message("无法生成子菜单");
+                message("하위 메뉴 생성 실패");
             return;
         }
         load_menu(it->command); return;
@@ -362,12 +362,12 @@ static void activate_item(int index) {
     /* A menu operation supersedes any browsing request not yet dispatched. */
     queue.desired = queue.applied = -1;
     if (!it->checkbox && !strcmp(name, "telnet_toggle.sh")) {
-        if (!live) { message("演示模式 · 未更改服务"); return; }
+        if (!live) { message("데모 · 서비스 변경 안 함"); return; }
         refresh_services(1);
-        if (!services.known) { message("无法读取服务状态 · 请重试"); return; }
+        if (!services.known) { message("서비스 상태 읽기 실패 · 재시도하세요"); return; }
         snprintf(command, sizeof command, "./telnet_toggle.sh --ui %s", services.telnet && services.ftp ? "disable" : "enable");
-        if (start_child(4, -1, command)) message(services.telnet && services.ftp ? "正在关闭 Telnet/FTP…" : "正在开启 Telnet/FTP…");
-        else message("服务操作启动失败");
+        if (start_child(4, -1, command)) message(services.telnet && services.ftp ? "Telnet/FTP 끄는 중…" : "Telnet/FTP 켜는 중…");
+        else message("서비스 작업 시작 실패");
         return;
     }
     if (!it->checkbox) { start_child(2, -1, it->command); return; }
@@ -376,18 +376,18 @@ static void activate_item(int index) {
         if (!((name[i] >= 'a' && name[i] <= 'z') || (name[i] >= 'A' && name[i] <= 'Z') ||
             (name[i] >= '0' && name[i] <= '9') || name[i] == '_' || name[i] == '-' || name[i] == '.')) return;
     if (!i || strstr(name, "..") || !strcmp(name, "a_init.sh")) return;
-    if (!live) { message("演示模式 · 未更改开关"); return; }
+    if (!live) { message("데모 · 설정 변경 안 함"); return; }
     snprintf(target, sizeof target, "%s/auto/%s", root, name);
     if (checked(name)) {
-        if (unlink(target) != 0) { message("无法关闭开关"); return; }
+        if (unlink(target) != 0) { message("설정을 끌 수 없음"); return; }
         snprintf(source, sizeof source, "%s/off_%s", root, name);
         snprintf(command, sizeof command, "./off_%s", name);
         if (access(source, R_OK) == 0) start_child(2, -1, command);
-        else message("已关闭自动执行");
+        else message("자동 실행 꺼짐");
     } else {
         snprintf(source, sizeof source, "%s/%s", root, name);
         snprintf(command, sizeof command, "./auto/%s", name);
-        if (!copy_file(source, target)) { fprintf(stderr, "COPY failed errno=%d\n", errno); message("无法启用开关"); return; }
+        if (!copy_file(source, target)) { fprintf(stderr, "COPY failed errno=%d\n", errno); message("설정을 켤 수 없음"); return; }
         start_child(2, -1, command);
     }
     dirty = 1;
@@ -458,16 +458,16 @@ static void draw(void) {
     if (nk_begin(ctx, "NXWA", nk_rect(0, 0, (float)width, (float)height), NK_WINDOW_NO_SCROLLBAR)) {
         nk_layout_row_begin(ctx, NK_STATIC, 24, 3);
         nk_layout_row_push(ctx, 460);
-        nk_label_colored(ctx, menu ? "NX-KS  /  菜单"
-                            : (lut_mode ? "LUT  /  3D 滤镜" : "FILMLAB  /  滤镜预览"),
+        nk_label_colored(ctx, menu ? "NX-KS  /  메뉴"
+                            : (lut_mode ? "LUT  /  3D 필터" : "FILMLAB  /  필터 미리보기"),
                          NK_TEXT_LEFT, accent);
         nk_layout_row_push(ctx, 104);
-        if (nk_button_label(ctx, menu ? "滤镜" : "菜单")) {
+        if (nk_button_label(ctx, menu ? "필터" : "메뉴")) {
             if (menu) { menu = 0; resize_panel(); }
             else { char p[64]; snprintf(p, sizeof p, "gui_ini.NX500"); load_menu(p); }
         }
         nk_layout_row_push(ctx, 104);
-        if (nk_button_label(ctx, "关闭")) queue.close_requested = 1;
+        if (nk_button_label(ctx, "닫기")) queue.close_requested = 1;
         nk_layout_row_end(ctx);
         if (menu) {
             start = page * 6;
@@ -476,14 +476,14 @@ static void draw(void) {
                 if (i >= item_count) { nk_spacing(ctx, 1); continue; }
                 if (!strcmp(base_name(items[i].command), "telnet_toggle.sh"))
                     nx_services_label(&services, line, sizeof line);
-                else snprintf(line, sizeof line, "%s%s", items[i].checkbox ? (checked(items[i].command) ? "[开] " : "[关] ") : "", items[i].label);
+                else snprintf(line, sizeof line, "%s%s", items[i].checkbox ? (checked(items[i].command) ? "[ON] " : "[OFF] ") : "", items[i].label);
                 if (nk_button_label(ctx, line)) { activate_item(i); break; }
             }
             nk_layout_row_dynamic(ctx, 32, 3);
-            if (nk_button_label(ctx, "上一页")) { page = page > 0 ? page - 1 : (item_count-1)/6; dirty = 1; }
+            if (nk_button_label(ctx, "이전 페이지")) { page = page > 0 ? page - 1 : (item_count-1)/6; dirty = 1; }
             snprintf(line, sizeof line, "%d / %d", page + 1, (item_count+5)/6);
             nk_label(ctx, line, NK_TEXT_CENTERED);
-            if (nk_button_label(ctx, "下一页")) { page = (page+1) % ((item_count+5)/6); dirty = 1; }
+            if (nk_button_label(ctx, "다음 페이지")) { page = (page+1) % ((item_count+5)/6); dirty = 1; }
         } else if (count > 0) {
             int gi, win = 5, first, idx;
             /* 60px：面板 208px 高，标题/滤镜条/状态行/滚动条/按钮行/底部状态
@@ -510,7 +510,7 @@ static void draw(void) {
             /* LUT mode has no PW components -- showing R0 G0 B0 would be noise,
              * and the 16px it costs is part of what pushes the button row out. */
             if (!lut_mode) {
-                snprintf(line, sizeof line, "%d/%d   R%d G%d B%d   H%d S%d 锐%d 对比%d", selected+1, count,
+                snprintf(line, sizeof line, "%d/%d   R%d G%d B%d   H%d S%d 선명%d 대비%d", selected+1, count,
                     recipes[selected].value[0], recipes[selected].value[1], recipes[selected].value[2],
                     recipes[selected].value[3], recipes[selected].value[4], recipes[selected].value[5], recipes[selected].value[6]);
                 nk_layout_row_dynamic(ctx, 16, 1);
@@ -525,28 +525,30 @@ static void draw(void) {
                 if (want >= 0 && want != selected) choose(want);
             }
             if (lut_mode) {
-                /* LUT 面板：apply 本身就是"保存"（写槽 + 登记表），所以
-                 * "保存并关闭"只等队列里最后一张 drain 完再退出，没有额外 commit。
-                 * 四个按钮与 FILMLAB 对齐：浏览 / 提交 / 复位 / 浏览。
-                 * 顶栏那个"关闭"是 X 窗口的退出，不要在这里重复放第三个。 */
+                /* Explicit Save queues the displayed LUT even on an untouched
+                 * panel. Plain Close only drains already queued work. */
                 nk_layout_row_dynamic(ctx, 26, 4);
-                if (nk_button_label(ctx, "‹ 上一个")) choose(selected-1);
-                if (nk_button_label(ctx, "保存并关闭") && !queue.close_requested) {
+                if (nk_button_label(ctx, "‹ 이전")) choose(selected-1);
+                if (nk_button_label(ctx, "저장 후 닫기") && !queue.close_requested && count > 0) {
+                    /* Opening the panel only restores the cursor. Explicit Save
+                     * must apply even when the user never changed selection. */
+                    nx_queue_select(&queue, selected, now_ms()-NXUI_DEBOUNCE_MS);
+                    queue.commit_requested = 1;
                     queue.close_requested = 1;
                 }
-                if (nk_button_label(ctx, "还原原厂") && !queue.close_requested) {
-                    if (child) message("正在执行 · 请稍候");
+                if (nk_button_label(ctx, "기본값 복원") && !queue.close_requested) {
+                    if (child) message("실행 중 · 잠시 기다려주세요");
                     else {
                         char restore_cmd[1024];
                         snprintf(restore_cmd, sizeof restore_cmd, "%s off", engine);
                         if (start_child(8, -1, restore_cmd)) {
                             queue.applied = -1;
                             queue.desired = -1;
-                            message("正在还原原厂表…");
-                        } else message("还原启动失败");
+                            message("기본 LUT 복원 중…");
+                        } else message("복원 시작 실패");
                     }
                 }
-                if (nk_button_label(ctx, "下一个 ›")) choose(selected+1);
+                if (nk_button_label(ctx, "다음 ›")) choose(selected+1);
             } else {
                 /* 四个按钮。顺序：浏览 / 提交 / 复位 / 浏览 —— "保存并关闭" 是主
                  * 操作，留在第二列（视觉中心附近），"还原" 是低频动作放第三列。
@@ -554,42 +556,42 @@ static void draw(void) {
                  * 所以"保存并关闭"之后仍会 apply 当前配方；要让复位持久只能靠
                  * 相机自己的风格复位。 */
                 nk_layout_row_dynamic(ctx, 26, 4);
-                if (nk_button_label(ctx, "‹ 上一个")) choose(selected-1);
-                if (nk_button_label(ctx, "保存并关闭") && !queue.close_requested) {
+                if (nk_button_label(ctx, "‹ 이전")) choose(selected-1);
+                if (nk_button_label(ctx, "저장 후 닫기") && !queue.close_requested) {
                     if (!child && selected == queue.applied) {
                         /* 当前选中已预览生效：仅保存到闪存，免一次完整 apply */
                         close_after_child = 1;
-                        if (!start_child(2, -1, "prefman save 0")) { close_after_child = 0; message("保存启动失败"); }
+                        if (!start_child(2, -1, "prefman save 0")) { close_after_child = 0; message("저장 시작 실패"); }
                     } else {
                         nx_queue_select(&queue, selected, now_ms()-NXUI_DEBOUNCE_MS);
                         queue.commit_requested = 1;
                         queue.close_requested = 1;
                     }
                 }
-                if (nk_button_label(ctx, "还原") && !queue.close_requested) {
-                    if (child) message("正在执行 · 请稍候");
+                if (nk_button_label(ctx, "복원") && !queue.close_requested) {
+                    if (child) message("실행 중 · 잠시 기다려주세요");
                     else {
                         char reset_cmd[1024];
                         snprintf(reset_cmd, sizeof reset_cmd, "%s neutral", engine);
                         if (start_child(7, -1, reset_cmd)) {
                             queue.applied = -1;
                             queue.desired = -1;
-                            message("正在还原中性…");
-                        } else message("还原启动失败");
+                            message("중립값 복원 중…");
+                        } else message("복원 시작 실패");
                     }
                 }
-                if (nk_button_label(ctx, "下一个 ›")) choose(selected+1);
+                if (nk_button_label(ctx, "다음 ›")) choose(selected+1);
             }
         } else {
             /* Say where to look. The generic message cost an hour of guessing
              * once: three uppercase look names had silently voided the list. */
             nk_layout_row_dynamic(ctx, 60, 1);
-            nk_label(ctx, lut_mode ? "滤镜库为空 · 见 /tmp/nxui.log 与 /mnt/mmc/looks"
-                                   : "配方表不可用 · 见 /tmp/nxui.log",
+            nk_label(ctx, lut_mode ? "필터 없음 · /tmp/nxui.log, /mnt/mmc/looks 확인"
+                                   : "레시피 읽기 실패 · /tmp/nxui.log 확인",
                      NK_TEXT_LEFT);
         }
         nk_layout_row_dynamic(ctx, 23, 1);
-        nk_label_colored(ctx, live ? status : "演示模式 · 未连接相机", NK_TEXT_LEFT, nk_rgb(171, 182, 190));
+        nk_label_colored(ctx, live ? status : "데모 · 카메라 연결 안 됨", NK_TEXT_LEFT, nk_rgb(171, 182, 190));
     }
     nk_end(ctx);
     nk_xlib_render(window, nk_rgb(24, 29, 33));
@@ -681,6 +683,7 @@ static int font_covers(const XFont *f, const char *text)
 static int font_covers_panel(const XFont *f)
 {
     int i;
+    if (!font_covers(f, "한국어 메뉴 저장 닫기 필터 복원")) return 0;
     for (i = 0; i < count; i++)
         if (!font_covers(f, recipes[i].label) || !font_covers(f, recipes[i].key)) return 0;
     for (i = 0; i < item_count; i++)
@@ -701,8 +704,16 @@ static void last_choice_load(void)
     FILE *f;
     int i;
     if (!state_dir || !*state_dir) return;
-    last_choice_path(path, sizeof path);
-    if (!(f = fopen(path, "r"))) return;
+    f = NULL;
+    if (lut_mode) {
+        snprintf(path, sizeof path, "%s/saved-lut", state_dir);
+        f = fopen(path, "r");
+    }
+    if (!f) {
+        last_choice_path(path, sizeof path);
+        f = fopen(path, "r");
+    }
+    if (!f) return;
     if (fgets(line, sizeof line, f)) {
         if ((nl = strchr(line, '\n')) != NULL) *nl = 0;
         for (i = 0; i < count; i++) {
@@ -758,7 +769,7 @@ int main(int argc, char **argv) {
     int font_tier = 0;   /* 0=面板子集(文件) 1=GB2312 子集(family) 2=原厂(文件) */
     const char *font_min = getenv("NXUI_FONT_MIN");      /* 一级：按文件开，只够面板自身文本 */
     const char *font_gb = getenv("NXUI_FONT_GB");        /* 二级：GB2312 全集，按 family 开 */
-    const char *font_name = "NXUI_CJK:pixelsize=19";
+    const char *font_name = "NXUI_KO:pixelsize=19";
     const char *font_file = getenv("NXUI_FONT_FILE");    /* 三级：原厂 10.7 MB，按文件开 */
     int font_explicit = 0;
     XSetWindowAttributes attr; XFont *font; Atom wm_delete; int i, lockfd, render_count = 0;
@@ -783,7 +794,7 @@ int main(int argc, char **argv) {
     /* 缺字回退与"子集字体缺失"共用这一个文件路径；不同固件字体名可能不同，
      * 所以留了环境变量口子。 */
     if (!font_file || !*font_file) font_file = "/usr/share/fonts/SDIC_GP_US_20120720.ttf";
-    if (!font_gb || !*font_gb) font_gb = "NXUI_CJK:pixelsize=19";
+    if (!font_gb || !*font_gb) font_gb = "NXUI_KO:pixelsize=19";
     /* 一级默认不开（NXUI_FONT_MIN 为空）：见字体打开处的实测对比。 */
     if (getenv("NXUI_FRAME_MS")) {
         int ms = atoi(getenv("NXUI_FRAME_MS"));
@@ -1062,7 +1073,7 @@ int main(int argc, char **argv) {
             if (!start_child(1, index, NULL)) {
                 drain_on_close = 0;
                 nx_queue_done(&queue, 0);
-                message("后端启动失败");
+                message("백엔드 시작 실패");
             }
         }
         if (tick >= next_frame && !quit) {
@@ -1113,7 +1124,7 @@ int main(int argc, char **argv) {
     }
     /* 只在真机上记位置：--snapshot 是测试路径，不该改写用户的卡片。
      * 测试环境没有 /mnt/mmc/nxui，fopen 失败即静默跳过，天然隔离。 */
-    if (!shot) last_choice_save();
+    if (!shot && !lut_mode) last_choice_save();
     fprintf(stderr, "EXIT renders=%d elapsed_ms=%lld wakeups=%d blits=%d max_draw_ms=%lld draw_avg_ms=%.2f draw_n=%d\n",
         render_count, now_ms()-started, wakeups, blits, max_draw_ms,
         draw_calls ? (double)draw_total_ms/draw_calls : 0.0, draw_calls);

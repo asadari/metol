@@ -1,15 +1,15 @@
-checkbox|远程保存|rem.sh
-button|视频码率|@/tmp/gui_br.NX500
+checkbox|원격 저장|rem.sh
+button|영상 비트레이트|@/tmp/gui_br.NX500
 
-button|变焦缩放|zoomzoom.sh
-button|分辨率修改|@/opt/usr/nx-ks/gui_res.NX500
+button|줌|zoomzoom.sh
+button|해상도 변경|@/opt/usr/nx-ks/gui_res.NX500
 
-button|批量录制|brec.sh
+button|연속 녹화|brec.sh
 button|HDR|1HDR.sh
-button|LUT 滤镜|nxui.sh lut
+button|LUT 필터|nxui.sh lut
 
-button| 版本 v2.88 |ver.sh
-checkbox|摄像模式|camcorder_mode.sh
+button| 버전 v2.88 |ver.sh
+checkbox|동영상 모드|camcorder_mode.sh
 
-button|返回|@/opt/usr/nx-ks/gui_ini.NX500
-button|取消|/opt/usr/nx-ks/gui_exit.sh
+button|뒤로|@/opt/usr/nx-ks/gui_ini.NX500
+button|취소|/opt/usr/nx-ks/gui_exit.sh

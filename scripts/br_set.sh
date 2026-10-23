@@ -1,6 +1,6 @@
 #!/bin/bash
 renice -n -10 -p $$  > /dev/null
-br=$(/opt/usr/nx-ks/popup_entry "$1 的码率:" "应用修改" 取消 180 number)
+br=$(/opt/usr/nx-ks/popup_entry "$1 비트레이트:" "변경 적용" 취소 180 number)
 [[  "$br" == "" ]] && exit
 #check if selected br is available
 avail_br=(35 40 45 50 55 60 65 70 75 80 85 90 95 100 110 120 130 140 150 160 170 180 190 200 210 220 230 240 250 260 270 280 290 300 310 320 400)

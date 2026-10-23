@@ -19,6 +19,6 @@ fi
 
 # NXUI 不可用（未安装或已 disable）时给个提示，不再回退去起服务
 if [ -x "$D/popup_timeout" ]; then
-    nice -n +10 "$D/popup_timeout" " LUT: NXUI 未启用 " 3
+    nice -n +10 "$D/popup_timeout" " LUT: NXUI 비활성화 " 3
 fi
 exit 1

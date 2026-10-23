@@ -21,7 +21,8 @@ OUT = REPO.parent / "release" / "NXUI-LUT-FIX-20261019.zip"
 # 包内路径 -> 仓库内源文件
 FILES = {
     "scripts/nxui/nxui.arm": SCRIPTS / "nxui/nxui.arm",
-    "scripts/nxui/fonts/NXUI_CJK.ttf": SCRIPTS / "nxui/fonts/NXUI_CJK.ttf",
+    "scripts/nxui/fonts-ko/NXUI_KO.otf": SCRIPTS / "nxui/fonts-ko/NXUI_KO.otf",
+    "scripts/nxui/fonts-ko/OFL-NotoSansCJK.txt": SCRIPTS / "nxui/fonts-ko/OFL-NotoSansCJK.txt",
     "scripts/nxui/fonts.conf": SCRIPTS / "nxui/fonts.conf",
     "scripts/nxui/install_nxui_fonts.sh": SCRIPTS / "nxui/install_nxui_fonts.sh",
     "scripts/nxui.sh": SCRIPTS / "nxui.sh",
@@ -35,6 +36,16 @@ FILES = {
 }
 
 
+# Include the translated menu sources and their generators with the UI binary.
+for source in SCRIPTS.glob("gui_*"):
+    if source.is_file():
+        FILES["scripts/" + source.name] = source
+for source in list(SCRIPTS.glob("*.sh")) + list((SCRIPTS / "ramp").glob("*.sh")):
+    FILES["scripts/" + source.relative_to(SCRIPTS).as_posix()] = source
+FILES["scripts/filmlab/recipes.json"] = SCRIPTS / "filmlab/recipes.json"
+FILES["README_KO.md"] = REPO / "README_KO.md"
+
+
 def main() -> int:
     target = Path(sys.argv[1]) if len(sys.argv) > 1 else OUT
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -42,6 +53,10 @@ def main() -> int:
     missing = [str(src) for src in FILES.values() if not src.is_file()]
     if missing:
         print("missing:\n  " + "\n  ".join(missing))
+        return 1
+
+    if "저장 후 닫기".encode() not in (SCRIPTS / "nxui/nxui.arm").read_bytes():
+        print("Korean nxui.arm required: rebuild with build.sh arm before packaging")
         return 1
 
     # 清单先算，再一起写进包；确保 manifest 与包内字节一致

@@ -31,7 +31,7 @@ class LutLauncherTests(unittest.TestCase):
                 path.chmod(0o755)
 
             # 记录每次被调用的参数，供断言使用
-            script(mod / "nxui/nxui.arm", 'printf "%s\\n" "$*" >> "$CALLS"\n')
+            script(mod / "nxui/nxui.arm", 'printf "%s\\n" "STATE=$NXUI_STATE_DIR $*" >> "$CALLS"\n')
             script(mod / "busybox", '''cmd="$1"; shift
 case "$cmd" in
 pidof) exit 1 ;;
@@ -95,6 +95,7 @@ esac
             arg_lines = calls.read_text().splitlines()
             self.assertEqual(arg_lines.count("LUTLIST"), 1)
             self.assertIn("--lut", arg_lines[-1])
+            self.assertIn(f"STATE={mod}/nxui-state", arg_lines[-1])
             self.assertIn(str(rec), arg_lines[-1])
 
             # 目录未变：不再调用 lut.sh，直接复用配方表

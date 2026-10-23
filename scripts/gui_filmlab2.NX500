@@ -8,12 +8,12 @@
 #   预设一/二/三 → 机身 UI 的自定义1/2/3
 #=====================================================================
 
-button|预设一 自定1|/opt/usr/nx-ks/filmlab.sh preset portra400
-button|预设二 自定2|/opt/usr/nx-ks/filmlab.sh preset velvia50
-button|预设三 自定3|/opt/usr/nx-ks/filmlab.sh preset trix400
+button|프리셋 1|/opt/usr/nx-ks/filmlab.sh preset portra400
+button|프리셋 2|/opt/usr/nx-ks/filmlab.sh preset velvia50
+button|프리셋 3|/opt/usr/nx-ks/filmlab.sh preset trix400
 #★ 不提供 slot 12（CUSTOM_4）预设：UI 不可见，写进去只会变成查不到的残留
 
-button|诊断|@/opt/usr/nx-ks/gui_filmlab3.NX500
+button|진단|@/opt/usr/nx-ks/gui_filmlab3.NX500
 
-button|返回|@/opt/usr/nx-ks/gui_filmlab.NX500
-button|取消|/opt/usr/nx-ks/gui_exit.sh
+button|뒤로|@/opt/usr/nx-ks/gui_filmlab.NX500
+button|취소|/opt/usr/nx-ks/gui_exit.sh

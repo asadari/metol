@@ -1114,11 +1114,11 @@ mkgui)
   {
     echo ""
     if [ "$PAGES" -gt 1 ]; then
-      echo "button|◀ 上页$((PAGE+1))/$PAGES|/opt/usr/nx-ks/filmlab_page.sh prev"
-      echo "button|▶ 下页$((PAGE+1))/$PAGES|/opt/usr/nx-ks/filmlab_page.sh next"
+      echo "button|◀ 이전$((PAGE+1))/$PAGES|/opt/usr/nx-ks/filmlab_page.sh prev"
+      echo "button|▶ 다음$((PAGE+1))/$PAGES|/opt/usr/nx-ks/filmlab_page.sh next"
     fi
-    echo "button|返回|@/opt/usr/nx-ks/gui_filmlab.NX500"
-    echo "button|取消|/opt/usr/nx-ks/gui_exit.sh"
+    echo "button|뒤로|@/opt/usr/nx-ks/gui_filmlab.NX500"
+    echo "button|취소|/opt/usr/nx-ks/gui_exit.sh"
   } >> "$OUT.tmp"
 
   # ★ 原子替换：mod_gui 只会看到完整菜单文件，绝不读到半成品

@@ -39,7 +39,7 @@ if { /bin/grep -q '^NX1$' /etc/version.info && /bin/grep -q '^1.41$' /etc/versio
     VEROK=1; IS_NX1=1
 fi
 if [ "$VEROK" != "1" ]; then
-    [ -x /mnt/mmc/scripts/popup_timeout ] && /mnt/mmc/scripts/popup_timeout " [  固件版本不支持  ] " 2 &
+    [ -x /mnt/mmc/scripts/popup_timeout ] && /mnt/mmc/scripts/popup_timeout " [  지원하지 않는 펌웨어  ] " 2 &
     exit 1
 fi
 
@@ -51,7 +51,7 @@ chmod +x "$POPUP" 2>/dev/null
 
 if [ ! -x /usr/sbin/bluetoothd.orig ]; then
     # ================= 全量安装(仅首次装机) =================
-    "$POPUP" " [  正在安装...  ] " 4 &
+    "$POPUP" " [  설치 중...  ] " 4 &
     mount -o remount,rw /
     mv /usr/sbin/bluetoothd /usr/sbin/bluetoothd.orig
     cat >/usr/sbin/bluetoothd << EOF
@@ -66,14 +66,14 @@ EOF
     mkdir -p /opt/usr/nx-ks
     cp -ar /mnt/mmc/scripts/* /opt/usr/nx-ks/
     sync;sync;sync
-    "$POPUP" " [ 安装完成 ] " 3
+    "$POPUP" " [ 설치 완료 ] " 3
 else
     # ================= 增量同步(日常更新, 安全) =================
     if [ ! -d /mnt/mmc/scripts ]; then
-        "$POPUP" " [ 错误: SD 卡无 scripts/ ] " 3
+        "$POPUP" " [ 오류: SD 카드에 scripts/ 없음 ] " 3
         exit 1
     fi
-    "$POPUP" " [  正在同步...  ] " 4 &
+    "$POPUP" " [  업데이트 중...  ] " 4 &
     # 停掉运行中的 web 遥控/键控进程, 保证覆盖后干净重启
     killall -q nx-remote-controller-daemon 2>/dev/null
     killall -q onscreen_rc 2>/dev/null
@@ -82,7 +82,7 @@ else
     # SD 母本全量覆盖相机内部运行副本(只覆盖不删除, 幂等可重复执行)
     cp -ar /mnt/mmc/scripts/* /opt/usr/nx-ks/
     sync;sync;sync
-    "$POPUP" " [  同步完成  ] " 3
+    "$POPUP" " [  업데이트 완료  ] " 3
     sleep 1
 fi
 
@@ -105,6 +105,11 @@ for _f in /opt/usr/nx-ks/* /opt/usr/nx-ks/nx-rc/* /opt/usr/nx-ks/nx-rc/thumb/* /
 done
 unset _f
 
+# Enable the Korean NXUI after installing its executable and font.
+if [ -f /opt/usr/nx-ks/nxui/fonts-ko/NXUI_KO.otf ]; then
+    sh /opt/usr/nx-ks/nxui.sh enable 2>/dev/null
+fi
+
 # ---- ★ 运行时数据目录（2026-10-17 加入）----
 # 一批老脚本把数据文件写死在 SD 的这两处（原版设计是 mod 整体放 /mnt/mmc/scripts/
 # 再 cp 到 /opt/usr/nx-ks/）。只从 tar 解压到 /opt/usr/nx-ks/ 的部署不会创建它们，
@@ -121,6 +126,7 @@ mkdir -p /mnt/mmc/scripts /sdcard/presets 2>/dev/null
 if /bin/grep -q '^NX500$' /etc/version.info && [ -x /opt/usr/nx-ks/filmlab.sh ]; then
     mkdir -p /mnt/mmc/filmlab 2>/dev/null
     [ -f /mnt/mmc/filmlab/recipes.json ] || cp -f /opt/usr/nx-ks/filmlab/recipes.json /mnt/mmc/filmlab/recipes.json 2>/dev/null
+    sh /opt/usr/nx-ks/update_korean_labels.sh 2>/dev/null
     /opt/usr/nx-ks/filmlab.sh mkgui >/dev/null 2>&1
 fi
 

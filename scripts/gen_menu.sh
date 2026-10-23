@@ -33,13 +33,13 @@ IP=$($BB ip addr ls 2>/dev/null | $BB awk '
         for (i = 1; i <= NF; i++)
             if ($i ~ /^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+\//) { sub(/\/.*/, "", $i); print $i; exit }
     }')
-[ -z "$IP" ] && IP="WiFi未开"
+[ -z "$IP" ] && IP="WiFi 꺼짐"
 
 # Telnet 状态 —— pidof（比 ps -w 便宜一个数量级）
 if $BB pidof telnetd > /dev/null 2>&1; then
-    TN="Telnet开"
+    TN="Telnet ON"
 else
-    TN="Telnet关"
+    TN="Telnet OFF"
 fi
 
 TMP="$DST.tmp"

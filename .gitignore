@@ -210,3 +210,6 @@ test_server/slp/a2_qemu/logs/*.elf
 
 # LUT 生成中间产物（.cube 可由 gen_luts.py 重新生成）
 tools/lutgen/cube/
+
+# Local Korean installation ZIPs and extracted copies (generated).
+/release/

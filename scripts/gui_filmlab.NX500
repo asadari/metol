@@ -14,11 +14,11 @@
 #   （子菜单页由 filmlab.sh mkgui 打开 mod_gui 时自动生成）
 #=====================================================================
 
-button|一键配方|@/opt/usr/nx-ks/gui_filmlab1b.NX500
-button|预设槽|@/opt/usr/nx-ks/gui_filmlab2.NX500
-button|诊断|@/opt/usr/nx-ks/gui_filmlab3.NX500
+button|필름 레시피|@/opt/usr/nx-ks/gui_filmlab1b.NX500
+button|프리셋 슬롯|@/opt/usr/nx-ks/gui_filmlab2.NX500
+button|진단|@/opt/usr/nx-ks/gui_filmlab3.NX500
 
-button|恢复中性|/opt/usr/nx-ks/filmlab.sh reset
+button|중립값 복원|/opt/usr/nx-ks/filmlab.sh reset
 
-button|返回|@/opt/usr/nx-ks/gui_ini.NX500
-button|取消|/opt/usr/nx-ks/gui_exit.sh
+button|뒤로|@/opt/usr/nx-ks/gui_ini.NX500
+button|취소|/opt/usr/nx-ks/gui_exit.sh

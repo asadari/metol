@@ -34,5 +34,5 @@ sync; sync; sync;
 echo 3 > /proc/sys/vm/drop_caches
 sleep 0.25
 #
-[[ $sleepytime > "0" ]] && $( /opt/usr/nx-ks/popup_timeout  "$(($sleepytime/60))分钟后唤醒..." 3 && rtcwake -m mem -s $sleepytime && reboot ) || /opt/usr/nx-ks/auto/tl.sh
+[[ $sleepytime > "0" ]] && $( /opt/usr/nx-ks/popup_timeout  "$(($sleepytime/60))분 후 절전 해제..." 3 && rtcwake -m mem -s $sleepytime && reboot ) || /opt/usr/nx-ks/auto/tl.sh
 

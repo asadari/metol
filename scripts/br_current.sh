@@ -6,10 +6,10 @@ if [ $(/bin/grep ^NX500$ /etc/version.info) = "NX500" -a $(/bin/grep ^1.12$ /etc
 mq=$(prefman get 0 0x0000a368  b);  mq=( $mq )
 mq=${mq[5]}
 cb=$( /opt/usr/nx-ks/gbr )
-[[  "$cb" == "" ]] && /opt/usr/nx-ks/popup_timeout  " [  配置文件不可调整  ] " 2 && exit
-br=$(/opt/usr/nx-ks/popup_entry "当前码率 ( Mbps ) :" "应用修改" 取消 $cb number )
+[[  "$cb" == "" ]] && /opt/usr/nx-ks/popup_timeout  " [  프로필을 변경할 수 없습니다  ] " 2 && exit
+br=$(/opt/usr/nx-ks/popup_entry "현재 비트레이트 (Mbps):" "변경 적용" 취소 $cb number )
 [[ "$br" == "" ]]  && exit
-[[ "${avail_br[@]}" =~ "${br}" ]] ||  { $(/opt/usr/nx-ks/popup_timeout  " [  值不可用  ] " 3) &&  exit ; }
+[[ "${avail_br[@]}" =~ "${br}" ]] ||  { $(/opt/usr/nx-ks/popup_timeout  " [  사용할 수 없는 값  ] " 3) &&  exit ; }
 mz=$(prefman get 0 0x0000a360  b);  mz=( $mz )
 mz=${mz[5]}
 case "$mz" in
@@ -39,16 +39,16 @@ case "$mz" in
    ;;
 *) ;;
 esac
-/opt/usr/nx-ks/popup_timeout  " [ 码率已更新  ] " 2
+/opt/usr/nx-ks/popup_timeout  " [ 비트레이트 변경 완료  ] " 2
 elif [ $(/bin/grep   ^NX1$   /etc/version.info) = "NX1" -a $(/bin/grep ^1.41$ /etc/version.info) = "1.41" ]; then
 #NX1
 mq=$(prefman get 0 0x00000338  b);  mq=( $mq ) 
 mq=${mq[5]}
 cb=$( /opt/usr/nx-ks/gbr )
-[[  "$cb" == "" ]] && /opt/usr/nx-ks/popup_timeout  " [  配置文件不可调整  ] " 2 && exit
-br=$(/opt/usr/nx-ks/popup_entry "当前码率 ( Mbps ) :" "应用修改" 取消 $cb number )
+[[  "$cb" == "" ]] && /opt/usr/nx-ks/popup_timeout  " [  프로필을 변경할 수 없습니다  ] " 2 && exit
+br=$(/opt/usr/nx-ks/popup_entry "현재 비트레이트 (Mbps):" "변경 적용" 취소 $cb number )
 [[ "$br" == "" ]]  && exit
-[[ "${avail_br[@]}" =~ "${br}" ]] ||  { $(/opt/usr/nx-ks/popup_timeout  " [  值不可用  ] " 3) &&  exit ; }
+[[ "${avail_br[@]}" =~ "${br}" ]] ||  { $(/opt/usr/nx-ks/popup_timeout  " [  사용할 수 없는 값  ] " 3) &&  exit ; }
 mz=$(prefman get 0 0x00000330  b);  mz=( $mz )
 mz=${mz[5]}
 case "$mz" in
@@ -81,7 +81,7 @@ case "$mz" in
    ;;
 *) ;;
 esac
-/opt/usr/nx-ks/popup_timeout  " [ 码率已更新  ] " 2
+/opt/usr/nx-ks/popup_timeout  " [ 비트레이트 변경 완료  ] " 2
 fi
 killall mod_gui
 exit

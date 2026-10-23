@@ -27,17 +27,17 @@ touchoff(){
 	dm=$(st cap capdtm getusr DIALMODE);  dm=( $dm )
 	dm=${dm[2]}
 	case "$dm" in
-	"DIALMODE_SMARTAUTO") st app mode auto 
+	"DIALMODE_SMARTAUTO") st app mode auto
 	    ;;
 	"DIALMODE_APERTURE") st app mode a
 	    ;;
-	"DIALMODE_SHUTTERSPEED") st app mode s 
+	"DIALMODE_SHUTTERSPEED") st app mode s
 	  ;;
-	"DIALMODE_MANUAL") st app mode m  
+	"DIALMODE_MANUAL") st app mode m
 	   ;;
 	"DIALMODE_SMARTPRO") st app mode smart-pro
 	   ;;
-	*) 
+	*)
 	st app mode p
 	;;
 	esac
@@ -45,26 +45,26 @@ touchoff(){
 
 tii=($(systemctl show-environment))
 #
-recording_length=$(/opt/usr/nx-ks/popup_entry  "录像时长:" "设置分钟数" 取消 10 number)
+recording_length=$(/opt/usr/nx-ks/popup_entry  "녹화 시간:" "시간(분) 설정" 취소 10 number)
 if [[ -z "$recording_length" ]]; then die; fi
 [[ $recording_length =~ ^[0-9]+$ ]] || recording_length=14
 #
 for i in "${tii[@]}"; do if [[ $i == "rec="* ]]; then rec=$((1-${i:4})); fi; done
 if [[ -z "$rec" ]]; then rec=1; fi
 
-/opt/usr/nx-ks/popup_ok "隐藏录制" 否 是 
-if [[  $? -eq 0 ]]; then  
-	blackout="on";  
+/opt/usr/nx-ks/popup_ok "녹화 화면 숨기기" 아니요 예
+if [[  $? -eq 0 ]]; then
+	blackout="on";
 	systemctl set-environment blackout="on";
 fi
-/opt/usr/nx-ks/popup_ok "触摸屏" 开 关 
-if [[  $? -eq 0 ]]; then  
-	touch="off";  
+/opt/usr/nx-ks/popup_ok "터치스크린" 켜기 끄기
+if [[  $? -eq 0 ]]; then
+	touch="off";
 fi
-/opt/usr/nx-ks/popup_ok "连续录制 - $recording_length 分钟批处理?" 开始 取消 
-if [[  $? -eq 0 ]]; then  
-	systemctl set-environment rec=0;  
-	die 
+/opt/usr/nx-ks/popup_ok "연속 녹화 - 회당 $recording_length 분?" 시작 취소
+if [[  $? -eq 0 ]]; then
+	systemctl set-environment rec=0;
+	die
 fi
 systemctl set-environment rec=$rec
 recording_length=$(($recording_length*60-1))
@@ -73,7 +73,7 @@ recording_length=$(($recording_length*60-1))
 [ $blackout ] && blackoutprep&
 until [ $rec -lt 1 ]
 do
-      /opt/usr/nx-ks/stapp "app nx record start" 
+      /opt/usr/nx-ks/stapp "app nx record start"
       [ $blackout ] && blackouton
       ticking $recording_length
       tii=($(systemctl show-environment))

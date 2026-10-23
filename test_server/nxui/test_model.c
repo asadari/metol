@@ -14,7 +14,7 @@ int main(void) {
     int fd = mkstemp(path); assert(fd >= 0); close(fd);
     assert(nx_key_valid("portra400")); assert(!nx_key_valid("x;reboot"));
     assert(!nx_key_valid("../x")); assert(!nx_key_valid(""));
-    fixture(path, "portra400|Portra 400|106|100|93|11|9|9|8\r\ntrix400|黑白|100|100|100|10|0|13|12\n");
+    fixture(path, "portra400|Portra 400|106|100|93|11|9|9|8\r\ntrix400|흑백|100|100|100|10|0|13|12\n");
     assert(nx_load_recipes(path, recipes, 4) == 2); assert(recipes[1].value[4] == 0);
     fixture(path, "x;reboot|X|100|100|100|10|10|10|10\n");
     assert(nx_load_recipes(path, recipes, 4) == -1);
@@ -24,7 +24,7 @@ int main(void) {
     assert(nx_load_recipes(path, recipes, 4) == -1);
     fixture(path, "x|X|100|100|100|10|10|10|10\nx|Y|100|100|100|10|10|10|10\n");
     assert(nx_load_recipes(path, recipes, 4) == -1);
-    fixture(path, "button|设置|@/opt/usr/nx-ks/gui_settings.NX500\ncheckbox|远程控制|nx-rc.sh\n");
+    fixture(path, "button|설정|@/opt/usr/nx-ks/gui_settings.NX500\ncheckbox|원격 제어|nx-rc.sh\n");
     assert(nx_load_menu(path, items, 4) == 2); assert(items[1].checkbox == 1);
     assert(nx_menu_path("/new", "@/opt/usr/nx-ks/gui_ini.NX500", out, sizeof out));
     assert(!strcmp(out, "/new/gui_ini.NX500"));

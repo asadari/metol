@@ -6,7 +6,7 @@ nx_shoot() {
     /usr/bin/st cap capt single start >/dev/null 2>&1 && return 0
     /usr/bin/st key push s1 && /usr/bin/st key click s2 && /usr/bin/st key release s1
 }
-z_d=$( /opt/usr/nx-ks/popup_entry "变焦延迟(毫秒):" "... 并开始" 取消 0 number)
+z_d=$( /opt/usr/nx-ks/popup_entry "줌 지연(ms):" "설정 후 시작" 취소 0 number)
 [[ $z_d =~ ^[0-9]+$ ]] || exit
 sleep 3
 nx_shoot

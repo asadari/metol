@@ -57,7 +57,7 @@ fi
                 send("key", "Escape"); assert p.wait(timeout=5) == 0
                 text = log.read_text()
                 assert text.count("MENU file=") == 1, text
-                assert "Telnet:开 FTP:关" in text and "Telnet:开 FTP:开" in text
+                assert "Telnet:ON FTP:OFF" in text and "Telnet:ON FTP:ON" in text
                 (OUT / f"{label}-service-interaction.log").write_text(text)
             finally:
                 if p.poll() is None: p.kill(); p.wait()

@@ -64,10 +64,10 @@ if [ "$TN" != "$WANT" ] || [ "$FTP" != "$WANT" ]; then
 fi
 if [ "$UI" = 0 ]; then
     if [ "$WANT" = 0 ]; then
-        "$D/popup_timeout" 'Telnet/FTP 已关闭' 3
+        "$D/popup_timeout" 'Telnet/FTP 꺼짐' 3
     else
         IP=$("$BB" ip addr ls 2>/dev/null | "$BB" awk '/inet/ && /mlan0/ { for(i=1;i<=NF;i++) if($i ~ /^[0-9]+\./) { sub(/\/.*/, "", $i); print $i; exit } }')
-        "$D/popup_timeout" "Telnet/FTP: ${IP:-WiFi未开}" 5
+        "$D/popup_timeout" "Telnet/FTP: ${IP:-WiFi 꺼짐}" 5
     fi
 fi
 exit 0

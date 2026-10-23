@@ -12,13 +12,13 @@
 # 再在机身 UI 上切到色温面板观察。
 #=====================================================================
 
-button| WB 自动(相机默认)|/opt/usr/nx-ks/filmlab.sh wb 0 7 7 auto
-button| WB 手动 3000K 暖|/opt/usr/nx-ks/filmlab.sh wb 3000 7 7 manual
-button| WB 手动 5600K 标准|/opt/usr/nx-ks/filmlab.sh wb 5600 7 7 manual
-button| WB 手动 8000K 冷|/opt/usr/nx-ks/filmlab.sh wb 8000 7 7 manual
-button| WB 自定义 tint绿|/opt/usr/nx-ks/filmlab.sh wb 5600 18 7 custom
+button| WB 자동(기본)|/opt/usr/nx-ks/filmlab.sh wb 0 7 7 auto
+button| WB 수동 3000K 따뜻함|/opt/usr/nx-ks/filmlab.sh wb 3000 7 7 manual
+button| WB 수동 5600K 표준|/opt/usr/nx-ks/filmlab.sh wb 5600 7 7 manual
+button| WB 수동 8000K 차가움|/opt/usr/nx-ks/filmlab.sh wb 8000 7 7 manual
+button| WB 사용자 녹색 틴트|/opt/usr/nx-ks/filmlab.sh wb 5600 18 7 custom
 
-button| 返回自动 WB|/opt/usr/nx-ks/filmlab.sh wb 0 7 7 auto
+button| 자동 WB 복원|/opt/usr/nx-ks/filmlab.sh wb 0 7 7 auto
 
-button|返回|@/opt/usr/nx-ks/gui_filmlab3.NX500
-button|取消|/opt/usr/nx-ks/gui_exit.sh
+button|뒤로|@/opt/usr/nx-ks/gui_filmlab3.NX500
+button|취소|/opt/usr/nx-ks/gui_exit.sh

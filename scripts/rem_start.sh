@@ -11,7 +11,7 @@ rem_p=$( sed -n "4p" "$filename")
 #
 if [ ! -f /opt/storage/sdcard/nx-netfs/remote_storage.sh ]; then
 	rm /opt/usr/nx-ks/auto/rem.sh; sync;sync;sync;
-    /opt/usr/nx-ks/popup_timeout  "请先安装 nx-netfs !" 5
+    /opt/usr/nx-ks/popup_timeout  "nx-netfs를 먼저 설치하세요!" 5
 else
 	cd /opt/usr/nx-ks/nx-netfs
 	/opt/storage/sdcard/nx-netfs/remote_storage.sh start "$rem_c" "$rem_s" "$rem_u" "$rem_p"	

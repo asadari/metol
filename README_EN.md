@@ -1,5 +1,13 @@
 # Metol (formerly NX-WA)
 
+## Korean fork update — 2026-10-23 / r5
+
+This [asadari/metol](https://github.com/asadari/metol) fork adds Korean NXUI/menu translations and fonts for NX500 firmware 1.12, plus LUT persistence fixes.
+Successful LUT selections are stored internally and restored on Metol startup. r5 removes the stale boot-ID skip condition and makes **Save and close** apply the displayed LUT even without browsing. Factory restore disables persistence; half-press is still needed to load the LUT into the image pipeline.
+
+Simulated lifecycle tests, ARM/QEMU Save-button input and Korean rendering checks pass. **r5 startup on a physical NX500 remains unverified.** Startup diagnostics are copied to `lut/boot-r5.log` on the SD card. See [README_KO.md](README_KO.md) for installation, build instructions and revision history.
+
+
 An enhancement mod for the **Samsung NX500 / NX1** (Tizen / DRIMe5), built on the community
 [`ottokiksmaler/nx500_nx1_modding`](https://github.com/ottokiksmaler/nx500_nx1_modding) upstream.
 

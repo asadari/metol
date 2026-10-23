@@ -1,14 +1,14 @@
-checkbox|静音快门|rolling_shutter.sh
-checkbox|禁用菜单键|z_button.sh
+checkbox|무음 셔터|rolling_shutter.sh
+checkbox|메뉴 키 끄기|z_button.sh
 
-checkbox|无录制限制|r-limit.sh
-checkbox|开机重新对焦|refocus.sh
+checkbox|녹화 제한 해제|r-limit.sh
+checkbox|시작 시 재초점|refocus.sh
 
-checkbox|无镜头释放|nolens.sh
-checkbox|启用蓝牙|bt.sh
+checkbox|렌즈 없이 촬영|nolens.sh
+checkbox|블루투스 켜기|bt.sh
 
-checkbox|叠加显示|ov.sh
-button|卸载模块 v2.88|uninstall.sh
+checkbox|오버레이|ov.sh
+button|모드 제거 v2.88|uninstall.sh
 
-button|返回|@/opt/usr/nx-ks/gui_ini.NX500
-button|取消|/opt/usr/nx-ks/gui_exit.sh
+button|뒤로|@/opt/usr/nx-ks/gui_ini.NX500
+button|취소|/opt/usr/nx-ks/gui_exit.sh

@@ -11,15 +11,15 @@ D=/opt/usr/nx-ks
 SRC=${1:-/mnt/mmc/_xfer/20261019}
 CACHE=/mnt/mmc/nxui/fc-cache
 
-[ -f "$SRC/NXUI_CJK.ttf" ] || { echo "missing $SRC/NXUI_CJK.ttf"; exit 1; }
+[ -f "$SRC/NXUI_KO.otf" ] || { echo "missing $SRC/NXUI_KO.otf"; exit 1; }
 [ -f "$SRC/fonts.conf" ] || { echo "missing $SRC/fonts.conf"; exit 1; }
 
-mkdir -p "$D/nxui/fonts" "$CACHE"
-cp "$SRC/NXUI_CJK.ttf" "$D/nxui/fonts/NXUI_CJK.ttf.new"
+mkdir -p "$D/nxui/fonts-ko" "$CACHE"
+cp "$SRC/NXUI_KO.otf" "$D/nxui/fonts-ko/NXUI_KO.otf.new"
 cp "$SRC/fonts.conf" "$D/nxui/fonts.conf.new"
-chmod 644 "$D/nxui/fonts/NXUI_CJK.ttf.new" "$D/nxui/fonts.conf.new"
-mv -f "$D/nxui/fonts/NXUI_CJK.ttf.new" "$D/nxui/fonts/NXUI_CJK.ttf"
+chmod 644 "$D/nxui/fonts-ko/NXUI_KO.otf.new" "$D/nxui/fonts.conf.new"
+mv -f "$D/nxui/fonts-ko/NXUI_KO.otf.new" "$D/nxui/fonts-ko/NXUI_KO.otf"
 mv -f "$D/nxui/fonts.conf.new" "$D/nxui/fonts.conf"
 sync
-md5sum "$D/nxui/fonts/NXUI_CJK.ttf" "$D/nxui/fonts.conf"
-echo "FONTS INSTALLED dir=$D/nxui/fonts cache=$CACHE"
+md5sum "$D/nxui/fonts-ko/NXUI_KO.otf" "$D/nxui/fonts.conf"
+echo "FONTS INSTALLED dir=$D/nxui/fonts-ko cache=$CACHE"

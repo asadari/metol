@@ -1,9 +1,9 @@
 #!/bin/bash
 hevc=($(st pmu show | grep hevc)); 
 if [[ "${hevc[1]}" == "ON" ]]; then 
-	/opt/usr/nx-ks/popup_timeout  "视频模式!?" 3
-	/opt/usr/nx-ks/popup_timeout  "确定要冒险吗?" 2
-	/opt/usr/nx-ks/popup_timeout  "倒计时: 3, 2,... 1" 2
+	/opt/usr/nx-ks/popup_timeout  "동영상 모드입니다!" 3
+	/opt/usr/nx-ks/popup_timeout  "계속 진행하시겠습니까?" 2
+	/opt/usr/nx-ks/popup_timeout  "카운트다운: 3, 2,... 1" 2
 	killall mod_gui
 	exit
 fi

@@ -7,7 +7,7 @@ waitforvideo() {
 }
 hevc=($(st pmu show | grep hevc)); 
 if [[ "${hevc[1]}" == "ON" ]]; then 
-	/opt/usr/nx-ks/popup_timeout  "警告: 视频模式下不加载模块!" 5
+	/opt/usr/nx-ks/popup_timeout  "주의: 동영상 모드에서는 모드를 불러오지 않습니다!" 5
 	waitforvideo
 fi
 export HIB=a
@@ -40,3 +40,6 @@ nice -n +15 /opt/usr/nx-ks/keyscan /dev/event0 /dev/event1 /opt/usr/nx-ks/ &
 sync
 sync
 sync
+
+# Reapply the last successful LUT after the camera is ready (NX500 1.12 only).
+/opt/usr/nx-ks/busybox setsid sh /opt/usr/nx-ks/lut.sh boot > /tmp/metol-lut-boot.log 2>&1 &

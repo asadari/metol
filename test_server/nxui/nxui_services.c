@@ -39,7 +39,7 @@ int nx_services_equal(const struct nx_services *a, const struct nx_services *b) 
     return a->known == b->known && a->telnet == b->telnet && a->ftp == b->ftp && !strcmp(a->ip, b->ip);
 }
 void nx_services_label(const struct nx_services *state, char *text, size_t size) {
-    snprintf(text, size, "%s  [Telnet:%s FTP:%s]", *state->ip ? state->ip : "WiFi未开",
-        state->known ? (state->telnet ? "开" : "关") : "?",
-        state->known ? (state->ftp ? "开" : "关") : "?");
+    snprintf(text, size, "%s  [Telnet:%s FTP:%s]", *state->ip ? state->ip : "WiFi 꺼짐",
+        state->known ? (state->telnet ? "ON" : "OFF") : "?",
+        state->known ? (state->ftp ? "ON" : "OFF") : "?");
 }

@@ -10,19 +10,19 @@ rem_p=$( sed -n "4p" "$filename")
 	if [ -z "$rem_p" ]; then rem_p="not entered"; fi
 #
 if [[ $1 == 'rem_c' ]]; then 
-	rem_c=$(/opt/usr/nx-ks/popup_entry "远程电脑:" 设置 删除 "$rem_c" )
+	rem_c=$(/opt/usr/nx-ks/popup_entry "원격 컴퓨터:" 설정 삭제 "$rem_c" )
 fi
 #
 if [[ $1 == 'rem_s' ]]; then 
-	rem_s=$(/opt/usr/nx-ks/popup_entry "共享目录:" 设置 删除 "$rem_s" )
+	rem_s=$(/opt/usr/nx-ks/popup_entry "공유 폴더:" 설정 삭제 "$rem_s" )
 fi
 #
 if [[ $1 == 'rem_u' ]]; then 
-	rem_u=$(/opt/usr/nx-ks/popup_entry "用户名:" 设置 删除 "$rem_u" )
+	rem_u=$(/opt/usr/nx-ks/popup_entry "사용자 이름:" 설정 삭제 "$rem_u" )
 fi
 #
 if [[ $1 == 'rem_p' ]]; then 
-	rem_p=$(/opt/usr/nx-ks/popup_entry "密码:" 设置 删除 "$rem_p" )
+	rem_p=$(/opt/usr/nx-ks/popup_entry "비밀번호:" 설정 삭제 "$rem_p" )
 fi
 #
 echo $rem_c > $filename

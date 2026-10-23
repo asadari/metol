@@ -14,15 +14,15 @@ button|Fuji 400H|/opt/usr/nx-ks/filmlab.sh apply fuji400h
 button|Velvia 50|/opt/usr/nx-ks/filmlab.sh apply velvia50
 button|Provia 100F|/opt/usr/nx-ks/filmlab.sh apply provia100f
 button|Ektachrome|/opt/usr/nx-ks/filmlab.sh apply ektachrome
-button|EK Cyan 冷调|/opt/usr/nx-ks/filmlab.sh apply ektachrome_cyan
+button|EK Cyan 쿨톤|/opt/usr/nx-ks/filmlab.sh apply ektachrome_cyan
 button|Kodachrome|/opt/usr/nx-ks/filmlab.sh apply kodachrome64
 button|TriX 400|/opt/usr/nx-ks/filmlab.sh apply trix400
 button|HP5 Plus|/opt/usr/nx-ks/filmlab.sh apply hp5
 button|Delta 3200|/opt/usr/nx-ks/filmlab.sh apply delta3200
-button|MonoWarm 暖调|/opt/usr/nx-ks/filmlab.sh apply monowarm
-button|MonoCool 冷调|/opt/usr/nx-ks/filmlab.sh apply monocool
+button|MonoWarm 웜톤|/opt/usr/nx-ks/filmlab.sh apply monowarm
+button|MonoCool 쿨톤|/opt/usr/nx-ks/filmlab.sh apply monocool
 button|Cine Teal|/opt/usr/nx-ks/filmlab.sh apply cine_teal
-button|X-Pro 交叉|/opt/usr/nx-ks/filmlab.sh apply xpro
+button|X-Pro 크로스|/opt/usr/nx-ks/filmlab.sh apply xpro
 
-button|返回|@/opt/usr/nx-ks/gui_filmlab.NX500
-button|取消|/opt/usr/nx-ks/gui_exit.sh
+button|뒤로|@/opt/usr/nx-ks/gui_filmlab.NX500
+button|취소|/opt/usr/nx-ks/gui_exit.sh

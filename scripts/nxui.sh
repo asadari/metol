@@ -76,6 +76,11 @@ export LC_ALL=C
 # 记住上次打开时停在哪一项（配方 slug / look 名，不是序号）。目录已由上面的
 # fc-cache 建好；写失败只是下次从头开始，不影响面板。
 export NXUI_STATE_DIR=/mnt/mmc/nxui
+if [ "$MODE" = lut ]; then
+    # Match lut.sh persistence; existing corrupt/duplicate SD entries are ignored.
+    export NXUI_STATE_DIR="$D/nxui-state"
+    [ -d "$NXUI_STATE_DIR" ] || mkdir -p "$NXUI_STATE_DIR" || exit 1
+fi
 # Xft uses fontconfig, so Chinese can use the existing Samsung TTF.
 set -- --root "$D" --recipes "$LAB/recipes.txt" --engine "$D/filmlab.sh"
 if [ "$MODE" = menu ]; then set -- "$@" --menu gui_ini.NX500; fi

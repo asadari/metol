@@ -24,6 +24,8 @@ D=/opt/usr/nx-ks
 BB=$D/busybox
 TD=$D/lut                       # 工具目录（随包安装：scripts/lut -> /opt/usr/nx-ks/lut）
 LAB=/mnt/mmc/looks              # 滤镜库：*.cube / *.bin
+PREF=$D/nxui-state  # Internal filesystem: avoid replacing files on camera exFAT
+LOCK=/tmp/metol-lut.lock
 ST=/mnt/mmc/lut/state           # 备份与状态（放 SD，随卡走）
 SLOT=0x81119F00                 # A18
 BAKDIR=/mnt/mmc/nxwa_regtab_20261018   # 原厂登记表备份（Still6 / BV12）
@@ -48,36 +50,129 @@ need_tools() {
     [ -n "$REGT" ]  && [ -x "$REGT" ]  || die "missing nx_regtabwrite.arm (looked in $TD and /mnt/mmc/lut)"
 }
 
-case "${1:-status}" in
+# All mutating entry points share a lock with startup restore.
+valid_name() {
+    case "$1" in ''|*/*|*'|'*|*'
+'*) return 1 ;; esac
+    return 0
+}
+factory_ready() {
+    "$REGT" view-status 2>/dev/null | $BB grep -qi \
+      '810fd100.*81101e00.*81106b00.*81115200'
+}
+action_id() { cat "$PREF/action-id" 2>/dev/null || echo 0; }
+mark_manual() {
+    seq=$(action_id)
+    case "$seq" in ''|*[!0-9]*) seq=0 ;; esac
+    printf '%s\n' "$((seq+1))" > "$PREF/action-id.tmp" &&
+        mv -f "$PREF/action-id.tmp" "$PREF/action-id" || die "cannot record manual action"
+}
+restore_ready() {
+    factory_ready && return 0
+    # A resumed camera may retain our pointers. Only reuse backups from the
+    # same kernel session, and never capture patched pointers as factory data.
+    [ "$(cat /proc/sys/kernel/random/boot_id)" = "$(cat "$ST/boot-id" 2>/dev/null)" ] || return 1
+    [ -f "$ST/ready" ] && [ -s "$ST/a18_orig.bin" ] &&
+        [ -s "$STILLBAK" ] && [ -s "$BVBAK" ] || return 1
+    "$REGT" view-status 2>/dev/null | $BB grep -qi \
+        '81119f00.*81119f00.*81119f00.*81119f00'
+}
+prepare_session() {
+    $BB mkdir -p "$ST" "$PREF" "$BAKDIR" || die "cannot create LUT state"
+    boot=$(cat /proc/sys/kernel/random/boot_id) || die "cannot read boot id"
+    oldboot=$(cat "$ST/boot-id" 2>/dev/null)
+    if [ "$boot" != "$oldboot" ] || { [ "$mode" = restore-saved ] && factory_ready; }; then
+        # A previous boot's RAM backup must never be restored into this boot.
+        # On first upgrade, refuse to adopt an already modified registry.
+        factory_ready || die "camera not at factory LUT baseline; restart camera and retry"
+        $BB rm -f "$ST/ready" "$ST/current" "$ST/keep" "$ST/a18_orig.bin" \
+            "$ST/touched" "$STILLBAK" "$BVBAK" || die "cannot reset stale session"
+        printf '%s\n' "$boot" > "$ST/boot-id" || die "cannot record boot id"
+    fi
+}
+begin_session() {
+    [ ! -f "$ST/ready" ] || return 0
+    "$SLOTW" read "$SLOT" "$ST/a18_orig.bin" > "$ST/begin.log" 2>&1 \
+        || { cat "$ST/begin.log"; die "slot backup failed"; }
+    $BB grep -q 'SLOT dumped' "$ST/begin.log" || die "slot backup not confirmed"
+    : > "$ST/ready" || die "cannot record backup"
+}
+remember() {
+    printf '%s\n' "$name" > "$PREF/saved-lut.tmp" && \
+        mv -f "$PREF/saved-lut.tmp" "$PREF/saved-lut" || die "LUT applied but preference save failed"
+    printf '%s\n' "$name" > "$PREF/last-lut.tmp" && \
+        mv -f "$PREF/last-lut.tmp" "$PREF/last-lut" || die "cannot save menu position"
+    $BB sync
+}
+mode=${1:-status}
+case "$mode" in
+  begin|apply|off|restore-saved)
+    grep -qx NX500 /etc/version.info && grep -qx 1.12 /etc/version.info \
+        || die "LUT writes require NX500 firmware 1.12"
+    $BB mkdir "$LOCK" 2>/dev/null || die "LUT operation already running"
+    trap '$BB rmdir "$LOCK" 2>/dev/null' EXIT
+    trap 'exit 1' HUP INT TERM
+    need_tools
+    if [ "$mode" = restore-saved ]; then
+        [ "$(action_id)" = "${2:-}" ] || { echo "SKIP newer manual action"; exit 0; }
+    fi
+    prepare_session
+    case "$mode" in apply|off) mark_manual ;; esac
+    ;;
+esac
+case "$mode" in
 list)
     [ -d "$LAB" ] || die "no $LAB"
     $BB ls "$LAB" 2>/dev/null | $BB grep -E '\.(cube|bin)$' | $BB sed 's/\.[^.]*$//' | $BB sort -u
     ;;
-
 begin)
+    begin_session
+    echo "OK backup ready"
+    ;;
+boot)
+    $BB mkdir -p "$PREF" || die "cannot create internal LUT state"
+    exec > "$PREF/boot.log" 2>&1
+    # Copy without rename; keep this separate from the old SD preference directory.
+    trap '[ ! -d "$LAB" ] || { $BB mkdir -p /mnt/mmc/lut && $BB cp "$PREF/boot.log" /mnt/mmc/lut/boot-r5.log; $BB sync; }' EXIT
+    echo "START LUT auto restore r5"
+    # Readiness checks are read-only. Do not block key scanning or force ISP reload.
+    grep -qx NX500 /etc/version.info && grep -qx 1.12 /etc/version.info || exit 0
+    [ -s "$PREF/saved-lut" ] || { echo "SKIP no internal saved LUT; apply one after update"; exit 0; }
+    echo "SAVED $(cat "$PREF/saved-lut")"
     need_tools
-    $BB mkdir -p "$ST" || die "cannot create $ST"
-    # 每次进入都重新取一份"当前状态"作为本次会话的还原点。
-    # 但有两种例外：
-    #   · 上次是半按关闭（keep 标记）⇒ 用户要保留这个 look，沿用同一份备份
-    #   · 上次异常退出（ready 残留但无 keep）⇒ 先还原，避免把已改状态当原厂
-    if [ -f "$ST/ready" ]; then
-        if [ -f "$ST/keep" ]; then
-            $BB rm -f "$ST/keep"
-            echo "OK resumed (look kept, previous backup reused)"
-            exit 0
+    expected_action=$(action_id)
+    tries=0; stable=0
+    while [ "$tries" -lt 30 ]; do
+        # Only actions after THIS startup attempt cancel it, not old boot IDs.
+        [ "$(action_id)" = "$expected_action" ] || { echo "SKIP newer manual action"; exit 0; }
+        if [ -d "$LAB" ] && $BB pidof di-camera-app >/dev/null && restore_ready; then
+            stable=$((stable+1))
+        else
+            stable=0
         fi
-        sh "$0" off > "$ST/previous-off.log" 2>&1
-    fi
-    "$SLOTW" read "$SLOT" "$ST/a18_orig.bin" > "$ST/begin.log" 2>&1 \
-        || { cat "$ST/begin.log"; die "slot backup failed"; }
-    $BB grep -q 'SLOT dumped' "$ST/begin.log" || { cat "$ST/begin.log"; die "slot backup not confirmed"; }
-    : > "$ST/ready"
-    echo "OK backup written to $ST/a18_orig.bin"
+        if [ "$stable" -ge 3 ]; then
+            echo "READY restoring saved LUT"
+            sh "$0" restore-saved "$expected_action"
+            result=$?
+            echo "RESULT $result"
+            exit "$result"
+        fi
+        echo "WAIT attempt=$tries card=$([ -d "$LAB" ] && echo ready || echo absent) stable=$stable"
+        tries=$((tries+1))
+        sleep 2
+    done
+    die "startup LUT restore timed out; select LUT manually"
     ;;
 
-apply)
-    name=${2:-}
+apply|restore-saved)
+    if [ "$mode" = restore-saved ]; then
+        [ -s "$PREF/saved-lut" ] || exit 0
+        IFS= read -r name < "$PREF/saved-lut" || exit 1
+    else
+        name=${2:-}
+        : > "$ST/touched"
+    fi
+    valid_name "$name" || die "invalid LUT name"
     [ -n "$name" ] || die "usage: lut.sh apply <name>"
     need_tools
     [ -d "$LAB" ] || die "no $LAB"
@@ -90,9 +185,7 @@ apply)
     $BB mkdir -p "$ST"
 
     # 首次进入时若未备份，先建立本次会话的还原点（不写 LUT）
-    if [ ! -f "$ST/ready" ]; then
-        sh "$0" begin || die "backup failed"
-    fi
+    begin_session
 
     # .cube 需要机上转换
     table=$src
@@ -142,11 +235,17 @@ apply)
     #   p7 只在自己的事件（半按/切档）里重新读取登记表，所以这里只改表与指针，
     #   由用户半按一次完成装载。半按在 LUT 模式下不会关闭面板。
     printf '%s\n' "$name" > "$ST/current"
+    : > "$ST/touched"
+    remember
     echo "OK applied $name"
-    echo "NEXT half-press once (panel stays open)"
+    echo "NEXT half-press once to load LUT"
     ;;
 
 off)
+    # Disable persistence even if hardware restore fails: reboot should stay stock.
+    $BB rm -f "$PREF/saved-lut" "$PREF/saved-lut.tmp" || die "cannot disable auto restore"
+    : > "$ST/touched"
+    $BB sync
     need_tools
     if [ ! -f "$ST/a18_orig.bin" ]; then
         echo "OK nothing to restore"
@@ -175,7 +274,7 @@ off)
 
 status)
     need_tools
-    if [ -f "$ST/current" ]; then
+    if [ "$(cat /proc/sys/kernel/random/boot_id)" = "$(cat "$ST/boot-id" 2>/dev/null)" ] && [ -f "$ST/current" ]; then
         echo "ACTIVE $(cat "$ST/current")"
     else
         echo "IDLE"
@@ -185,7 +284,7 @@ status)
     ;;
 
 *)
-    echo "usage: lut.sh list|begin|apply <name>|off|status"
+    echo "usage: lut.sh list|begin|apply <name>|off|status|boot"
     exit 2
     ;;
 esac

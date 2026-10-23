@@ -43,7 +43,7 @@ LOG="$SDCARD/uninstall_menu.log"
 # ---- 1. 确认框：能弹就弹，弹不出来就继续（★ 这是死锁的关键修复点）----
 ANSWER=0
 if [ -x "$DIR/popup_ok" ]; then
-	"$DIR/popup_ok" "确定要移除所有模块？" 卸载 取消
+	"$DIR/popup_ok" "모든 모드를 제거할까요?" 제거 취소
 	rc=$?
 	# 255 = 取消（原版逻辑）。其它值一律当作确认 => 不阻塞卸载
 	[ "$rc" -eq 255 ] && ANSWER=1
@@ -51,7 +51,7 @@ fi
 if [ "$ANSWER" = "1" ]; then
 	echo "用户取消" >> "$LOG"
 	# 取消时若 mod 还活着，可以给个反馈
-	[ -x "$DIR/popup_timeout" ] && "$DIR/popup_timeout" " [ 已取消 ] " 2
+	[ -x "$DIR/popup_timeout" ] && "$DIR/popup_timeout" " [ 취소됨 ] " 2
 	exit 0
 fi
 echo "继续卸载" >> "$LOG"
@@ -59,7 +59,7 @@ echo "继续卸载" >> "$LOG"
 # ---- 2. 前置检查：只认 bluetoothd.orig（★ 不再做版本校验）----
 if [ ! -f /usr/sbin/bluetoothd.orig ]; then
 	echo "未检测到 BT 模块（bluetoothd.orig 不存在）" >> "$LOG"
-	[ -x "$DIR/popup_timeout" ] && "$DIR/popup_timeout" " [ 未检测到BT模块 ] " 3
+	[ -x "$DIR/popup_timeout" ] && "$DIR/popup_timeout" " [ BT 모듈을 찾을 수 없음 ] " 3
 	sleep 2
 	reboot
 	exit 0

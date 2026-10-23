@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 st app mode m
-/opt/usr/nx-ks/popup_timeout  "调整曝光速度后按EV键" 2
+/opt/usr/nx-ks/popup_timeout  "셔터 속도 조절 후 EV를 누르세요" 2
 #
 cat /dev/event1 > /tmp/getsp &
 end=$((SECONDS+30))

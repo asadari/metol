@@ -22,7 +22,7 @@ int main(void) {
     nx_services_read(&a, dir); assert(a.telnet && a.ftp);
     fixture(tcp6, ""); nx_services_read(&b, dir);
     assert(b.known && b.telnet && !b.ftp && !nx_services_equal(&a, &b));
-    nx_services_label(&b, label, sizeof label); assert(strstr(label, "Telnet:开 FTP:关"));
+    nx_services_label(&b, label, sizeof label); assert(strstr(label, "Telnet:ON FTP:OFF"));
     unlink(tcp); unlink(tcp6); rmdir(dir);
     puts("PASS service state: listener-only, IPv4/IPv6, partial and unreadable status");
     return 0;
